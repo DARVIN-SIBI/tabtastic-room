@@ -16,32 +16,16 @@ import type { User } from "@supabase/supabase-js";
 
 const DashboardLayout = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userRole, setUserRole] = useState<string>("");
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkUserRole = async (userId: string) => {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .single();
-
-      if (!error && data) {
-        setUserRole(data.role);
-        setIsAdmin(data.role === "admin");
-      }
-    };
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/auth");
       } else {
         setUser(session.user);
-        checkUserRole(session.user.id);
       }
     });
 
@@ -50,7 +34,6 @@ const DashboardLayout = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
-        checkUserRole(session.user.id);
       }
     });
 
@@ -66,7 +49,7 @@ const DashboardLayout = () => {
   };
 
   const navItems = [
-    ...(isAdmin ? [{ icon: UtensilsCrossed, label: "Menu Items", path: "/dashboard" }] : []),
+    { icon: UtensilsCrossed, label: "Menu Items", path: "/dashboard" },
     { icon: FileText, label: "New Bill", path: "/dashboard/new-bill" },
     { icon: History, label: "Bills History", path: "/dashboard/bills" },
   ];
@@ -110,14 +93,6 @@ const DashboardLayout = () => {
               </span>
             </div>
           </div>
-          <div className="px-6 mb-6">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Role:</span>
-              <span className={`font-semibold ${isAdmin ? 'text-accent' : 'text-primary'}`}>
-                {userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1) : 'Loading...'}
-              </span>
-            </div>
-          </div>
           <nav className="flex-1 px-4 space-y-2">
             <NavLinks />
           </nav>
@@ -151,14 +126,6 @@ const DashboardLayout = () => {
                   </div>
                   <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     Bill Manager
-                  </span>
-                </div>
-              </div>
-              <div className="px-6 mb-6">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">Role:</span>
-                  <span className={`font-semibold ${isAdmin ? 'text-accent' : 'text-primary'}`}>
-                    {userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1) : 'Loading...'}
                   </span>
                 </div>
               </div>
