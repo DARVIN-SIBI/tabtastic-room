@@ -16,6 +16,7 @@ import type { User } from "@supabase/supabase-js";
 
 const DashboardLayout = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -26,6 +27,7 @@ const DashboardLayout = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
+        checkAdminRole(session.user.id);
       }
     });
 
@@ -34,11 +36,28 @@ const DashboardLayout = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
+        checkAdminRole(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const checkAdminRole = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error('Error checking admin role:', error);
+      setIsAdmin(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -49,7 +68,7 @@ const DashboardLayout = () => {
   };
 
   const navItems = [
-    { icon: UtensilsCrossed, label: "Menu Items", path: "/dashboard" },
+    ...(isAdmin ? [{ icon: UtensilsCrossed, label: "Menu Items", path: "/dashboard" }] : []),
     { icon: FileText, label: "New Bill", path: "/dashboard/new-bill" },
     { icon: History, label: "Bills History", path: "/dashboard/bills" },
   ];
