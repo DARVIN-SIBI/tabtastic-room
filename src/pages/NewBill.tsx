@@ -132,6 +132,9 @@ const NewBill = () => {
       const tax = calculateTax();
       const total = calculateTotal();
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       const { data: billData, error: billError } = await supabase
         .from("bills")
         .insert({
@@ -143,6 +146,7 @@ const NewBill = () => {
           tax: parseFloat(tax.toFixed(2)),
           total: parseFloat(total.toFixed(2)),
           payment_method: paymentMethod || null,
+          created_by: user.id,
         })
         .select()
         .single();
