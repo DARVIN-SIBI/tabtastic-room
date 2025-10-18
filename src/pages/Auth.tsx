@@ -152,7 +152,12 @@ const Auth = () => {
                     type="text"
                     placeholder="John Doe"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                      setFullName(value);
+                    }}
+                    pattern="[a-zA-Z\s]+"
+                    title="Only letters and spaces are allowed"
                     required
                   />
                 </div>

@@ -334,7 +334,12 @@ const NewBill = () => {
                   <Input
                     id="customer-name"
                     value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                      setCustomerName(value);
+                    }}
+                    pattern="[a-zA-Z\s]*"
+                    title="Only letters and spaces are allowed"
                     placeholder="Optional"
                   />
                 </div>
@@ -342,8 +347,14 @@ const NewBill = () => {
                   <Label htmlFor="customer-phone">Phone Number</Label>
                   <Input
                     id="customer-phone"
+                    type="tel"
                     value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setCustomerPhone(value);
+                    }}
+                    pattern="[0-9]*"
+                    title="Only numbers are allowed"
                     placeholder="Optional"
                   />
                 </div>
@@ -352,7 +363,12 @@ const NewBill = () => {
                   <Input
                     id="room-number"
                     value={roomNumber}
-                    onChange={(e) => setRoomNumber(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setRoomNumber(value);
+                    }}
+                    pattern="[0-9]*"
+                    title="Only numbers are allowed"
                     placeholder="Optional"
                   />
                 </div>
